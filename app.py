@@ -344,6 +344,36 @@ def sender():
         )
 
         image.save(filepath)
+        img = cv2.imread(filepath)
+
+        if img is None:
+            return render_template(
+                "sender.html",
+                error="Invalid image file"
+            )
+
+        height, width = img.shape[:2]
+
+        MAX_SIZE = 500
+
+        if width > MAX_SIZE or height > MAX_SIZE:
+
+            scale = min(
+                MAX_SIZE / width,
+                MAX_SIZE / height
+            )
+
+            new_width = int(width * scale)
+            new_height = int(height * scale)
+
+            img = cv2.resize(
+                img,
+                (new_width, new_height)
+            )
+
+            cv2.imwrite(filepath, img)
+        
+
         encrypted = encrypt_image(
             filepath,
             secret_key
